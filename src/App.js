@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addMovie, editMovie, deleteMovie } from './actions';
+import Navigation from './Navigation';
+import MovieList from './MovieList';
+import MovieForm from './MovieForm';
 
-function App() {
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentMovie, setCurrentMovie] = useState(null);
+  const movies = useSelector((state) => state.movies);
+  const dispatch = useDispatch();
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const filteredMovies = movies.filter((movie) =>
+    movie.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAdd = (movie) => {
+    dispatch(addMovie(movie));
+  };
+
+  const handleEdit = (movie) => {
+    setCurrentMovie(movie);
+  };
+
+  const handleUpdate = (id, updatedMovie) => {
+    dispatch(editMovie(id, updatedMovie));
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deleteMovie(id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navigation handleSearch={handleSearch} />
+      <MovieForm
+        handleAdd={handleAdd}
+        handleUpdate={handleUpdate}
+        currentMovie={currentMovie}
+        setCurrentMovie={setCurrentMovie}
+      />
+      <MovieList
+        movies={filteredMovies}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
     </div>
   );
-}
+};
 
 export default App;
